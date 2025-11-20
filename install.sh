@@ -140,38 +140,57 @@ fi
 # 步骤 3: 创建工作目录
 ###############################################################################
 
-print_header "步骤 3/6: 创建工作目录"
+print_header "步骤 3/6: 准备安装目录"
 
 INSTALL_DIR="$HOME/telegram-auto-checkin"
 
-if [ -d "$INSTALL_DIR" ]; then
-    print_warning "目录已存在: $INSTALL_DIR"
-    read -p "是否删除并重新安装? (y/n) " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        rm -rf "$INSTALL_DIR"
-        print_info "已删除旧目录"
-    else
-        print_error "安装已取消"
-        exit 1
-    fi
-fi
-
-# 注意：这里假设脚本是从项目目录运行的
+# 获取脚本所在目录（必须在任何 cd 操作之前）
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# 检查是否在目标目录中运行
 if [ "$SCRIPT_DIR" = "$INSTALL_DIR" ]; then
-    print_info "已在目标目录中，跳过复制"
+    print_info "脚本已在安装目录中，跳过复制步骤"
+    print_success "使用现有文件: $INSTALL_DIR"
 else
+    # 在其他目录运行，需要复制文件
+    if [ -d "$INSTALL_DIR" ]; then
+        print_warning "目录已存在: $INSTALL_DIR"
+        read -p "是否删除并重新安装? (y/n) " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            rm -rf "$INSTALL_DIR"
+            print_info "已删除旧目录"
+        else
+            print_error "安装已取消"
+            exit 1
+        fi
+    fi
+    
     print_info "创建目录: $INSTALL_DIR"
     mkdir -p "$INSTALL_DIR"
     
     print_info "复制项目文件..."
-    cp -r "$SCRIPT_DIR"/* "$INSTALL_DIR/" 2>/dev/null || true
-    print_success "文件复制完成"
+    if [ "$(ls -A "$SCRIPT_DIR" 2>/dev/null)" ]; then
+        cp -r "$SCRIPT_DIR"/* "$INSTALL_DIR/" 2>/dev/null || {
+            print_error "文件复制失败"
+            exit 1
+        }
+        # 复制隐藏文件
+        cp -r "$SCRIPT_DIR"/.* "$INSTALL_DIR/" 2>/dev/null || true
+        print_success "文件复制完成"
+    else
+        print_error "源目录为空或不存在"
+        exit 1
+    fi
 fi
 
-cd "$INSTALL_DIR"
+# 切换到安装目录
+cd "$INSTALL_DIR" || {
+    print_error "无法进入目录: $INSTALL_DIR"
+    exit 1
+}
+
+print_success "工作目录: $INSTALL_DIR"
 
 ###############################################################################
 # 步骤 4: 创建 Python 虚拟环境
