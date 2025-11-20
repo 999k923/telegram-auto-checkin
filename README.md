@@ -69,7 +69,7 @@ sudo systemctl start telegram-auto-checkin
 
 ```bash
 # 克隆仓库
-git clone https://github.com/你的用户名/telegram-auto-checkin.git
+git clone https://github.com/999k923/telegram-auto-checkin.git
 cd telegram-auto-checkin
 
 # 一键安装（自动完成所有配置）
