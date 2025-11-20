@@ -17,7 +17,7 @@
 
 ```bash
 # 一条命令完成所有操作
-git clone https://github.com/你的用户名/telegram-auto-checkin.git && \
+git clone https://github.com/999k923/telegram-auto-checkin.git && \
 cd telegram-auto-checkin && \
 chmod +x install.sh && \
 sudo bash install.sh
