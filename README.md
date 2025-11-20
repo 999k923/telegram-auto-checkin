@@ -36,7 +36,6 @@ sudo systemctl start telegram-auto-checkin
 ```
 
 > 💡 **完整教程：** 查看 [INSTALL.md](INSTALL.md) 小白专用教程  
-> 📚 **GitHub 指南：** 查看 [GITHUB_GUIDE.md](GITHUB_GUIDE.md) 上传到 GitHub 教程
 
 ---
 
