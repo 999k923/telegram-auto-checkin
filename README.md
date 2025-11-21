@@ -141,6 +141,8 @@ sudo bash install.sh
 ### 第四步：首次登录验证
 
 ```bash
+#自动执行时候缺少了telethon模块从新手动执行安装
+pip install -r requirements.txt
 source venv/bin/activate
 python test_login.py
 ```
