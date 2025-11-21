@@ -16,14 +16,12 @@
 ### 最简单的部署方式：
 
 ```bash
-# 一条命令完成所有操作
 git clone https://github.com/999k923/telegram-auto-checkin.git; cd telegram-auto-checkin; chmod +x install.sh; sudo bash install.sh
 ```
 
 **部署完成后：**
 
 ```bash
-# 首次登录验证
 source venv/bin/activate
 python test_login.py
 
