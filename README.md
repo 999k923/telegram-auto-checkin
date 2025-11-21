@@ -34,8 +34,6 @@ sudo ./setup_service.sh
 sudo systemctl start telegram-auto-checkin
 ```
 
-> 💡 **完整教程：** 查看 [INSTALL.md](INSTALL.md) 小白专用教程  
-
 ---
 
 ## ✨ 功能特点
