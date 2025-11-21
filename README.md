@@ -22,6 +22,7 @@ git clone https://github.com/999k923/telegram-auto-checkin.git; cd telegram-auto
 **部署完成后：**
 
 ```bash
+# 首次运行
 source venv/bin/activate
 python test_login.py
 
