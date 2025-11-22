@@ -23,6 +23,8 @@ git clone https://github.com/999k923/telegram-auto-checkin.git; cd telegram-auto
 
 ```bash
 # 首次运行
+#自动执行时候缺少了telethon模块从新手动执行安装
+pip install -r requirements.txt
 source venv/bin/activate
 python test_login.py
 
@@ -56,9 +58,7 @@ sudo systemctl start telegram-auto-checkin
 
 ## 🎯 快速开始
 
-### 方式一：从 GitHub 部署（推荐）
-
-**前提：** 先将项目上传到 GitHub（见 [GITHUB_GUIDE.md](GITHUB_GUIDE.md)）
+### 方式一：从 GitHub 部署
 
 ```bash
 # 克隆仓库
