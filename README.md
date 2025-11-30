@@ -69,15 +69,6 @@ cd telegram-auto-checkin
 sudo bash install.sh
 ```
 
-### 方式二：手动上传部署
-
-```bash
-# 上传项目文件到服务器后
-cd ~/telegram-auto-checkin
-chmod +x install.sh
-sudo bash install.sh
-```
-
 **脚本会自动完成：**
 - ✅ 安装 Python 和依赖
 - ✅ 创建虚拟环境
