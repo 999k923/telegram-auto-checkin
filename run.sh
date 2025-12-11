@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 简单的后台运行脚本（不使用 systemd）
+# 简单的后台运行脚本（通过 systemd 启动）
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 cd "$SCRIPT_DIR"
@@ -48,3 +48,46 @@ echo ""
 echo "停止机器人:"
 echo "  kill $NEW_PID"
 echo "  或运行: ./stop.sh"
+
+# 创建 systemd 服务文件 (如果不存在)
+SERVICE_FILE="/etc/systemd/system/telegram-auto-checkin.service"
+
+if [ ! -f "$SERVICE_FILE" ]; then
+    echo "创建 systemd 服务文件..."
+
+    cat > $SERVICE_FILE << EOF
+[Unit]
+Description=Telegram Auto Check-in Service
+After=network.target
+
+[Service]
+Type=simple
+User=$USER
+WorkingDirectory=$SCRIPT_DIR
+Environment="PATH=$SCRIPT_DIR/venv/bin"
+ExecStart=$SCRIPT_DIR/venv/bin/python $SCRIPT_DIR/main.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    echo "✅ systemd 服务文件创建成功"
+else
+    echo "⚠️ 服务文件已经存在，无需创建"
+fi
+
+# 重新加载 systemd 配置
+echo "重新加载 systemd 配置..."
+sudo systemctl daemon-reload
+
+# 启动服务
+echo "启动 Telegram Auto Check-in 服务..."
+sudo systemctl start telegram-auto-checkin
+
+# 设置服务开机自启
+echo "设置服务开机自启..."
+sudo systemctl enable telegram-auto-checkin
+
+echo "✅ 服务已启动并设置为开机自启"
