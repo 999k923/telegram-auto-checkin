@@ -36,16 +36,15 @@ chmod +x install.sh
 ```bash
 python test_login.py
 ```
+
 ```bash
 # 测试签到
 python manual_checkin.py
-
 # 启动自动签到服务
 sudo ./setup_service.sh
 sudo systemctl start telegram-auto-checkin
 ```
 
----
 
 ## ✨ 功能特点
 
