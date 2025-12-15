@@ -34,6 +34,7 @@ chmod +x install.sh
 **部署完成后：**
 
 ```bash
+source venv/bin/activate
 python test_login.py
 ```
 
@@ -146,6 +147,7 @@ sudo bash install.sh
 ### 第四步：首次登录验证
 
 ```bash
+source venv/bin/activate
 python test_login.py
 ```
 
