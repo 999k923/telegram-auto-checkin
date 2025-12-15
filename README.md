@@ -16,17 +16,26 @@
 ### 最简单的部署方式：
 
 ```bash
-git clone https://github.com/999k923/telegram-auto-checkin.git; cd telegram-auto-checkin; chmod +x install.sh; sudo bash install.sh
+git clone https://github.com/999k923/telegram-auto-checkin.git
+cd telegram-auto-checkin
+
+# 创建虚拟环境
+python3 -m venv venv
+source venv/bin/activate  # 激活虚拟环境
+
+# 授权安装脚本可执行
+chmod +x install.sh
+
+# 运行安装脚本（不需要 sudo）
+./install.sh
+
 ```
 
 **部署完成后：**
 
 ```bash
-# 首次运行
-source venv/bin/activate
-pip install -r requirements.txt
 python test_login.py
-
+```
 # 测试签到
 python manual_checkin.py
 
