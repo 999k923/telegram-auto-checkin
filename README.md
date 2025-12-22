@@ -138,7 +138,7 @@ python manual_checkin.py
 chmod +x setup_service.sh
 sudo ./setup_service.sh
 ```
-# 启动服务
+启动服务
 ```bash
 sudo systemctl start telegram-auto-checkin
 ```
