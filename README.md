@@ -135,6 +135,7 @@ python manual_checkin.py
 ### 第六步：设置自动运行
 
 ```bash
+chmod +x setup_service.sh
 sudo ./setup_service.sh
 ```
 
