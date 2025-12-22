@@ -138,6 +138,10 @@ python manual_checkin.py
 chmod +x setup_service.sh
 sudo ./setup_service.sh
 ```
+# 启动服务
+```bash
+sudo systemctl start telegram-auto-checkin
+```
 
 **完成！** 现在可以退出 SSH，脚本会在后台自动运行。
 
