@@ -71,7 +71,7 @@ sudo bash install.sh
 ```
 1️⃣  显示名称: @okemby_bot
 2️⃣  目标标识: @okemby_bot
-3️⃣  签到命令: /start
+3️⃣  签到命令: /start  #用于呼出按钮的命令
 4️⃣  签到方式: 1 (按钮点击)
 5️⃣  按钮文字: 签到
 
