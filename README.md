@@ -49,7 +49,8 @@ sudo bash install.sh
 2. 使用手机号登录
 3. 点击 "API development tools"
 4. 创建应用获取 `API_ID` 和 `API_HASH`
-获取提示ERROR，+86手机注册账号换香港或者台湾的干净节点。
+
+获取如果提示ERROR，+86手机注册账号换香港或者台湾的干净节点。
 
 ### 第三步：按提示配置
 
