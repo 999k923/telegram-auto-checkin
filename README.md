@@ -172,6 +172,7 @@ sudo ./uninstall.sh
 不确定群组名称或找不到群组？使用这个工具：
 
 ```bash
+source venv/bin/activate
 python list_groups.py
 ```
 
