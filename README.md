@@ -25,19 +25,22 @@
 ### 方式一：从 GitHub 部署
 
 ```bash
-# 克隆仓库
+# 1. 克隆仓库
 git clone https://github.com/999k923/telegram-auto-checkin.git
-
 cd telegram-auto-checkin
 
+# 2. 安装虚拟环境依赖（如果未安装 python3-venv）
 sudo apt install python3.12-venv
 
-# 创建并激活虚拟环境
+# 3. 创建虚拟环境
 python3 -m venv venv
+
+# 4. 激活虚拟环境（激活后会看到 (venv) 提示）
 source venv/bin/activate  # (venv) 提示出现
 
-# 一键安装（自动完成所有配置）
+# 5. 一键安装（自动完成所有配置）
 sudo bash install.sh
+
 ```
 
 **脚本会自动完成：**
