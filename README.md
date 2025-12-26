@@ -160,6 +160,11 @@ sudo systemctl status telegram-auto-checkin
 exit
 ```
 
+### 卸载脚本
+```bash
+sudo ./uninstall.sh
+```
+
 ## 🛠️ 常用工具
 
 ### 📋 查看所有群组和机器人
