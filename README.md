@@ -27,7 +27,10 @@
 ```bash
 # 克隆仓库
 git clone https://github.com/999k923/telegram-auto-checkin.git
+
 cd telegram-auto-checkin
+
+sudo apt install python3.12-venv
 
 # 创建并激活虚拟环境
 python3 -m venv venv
