@@ -642,7 +642,7 @@ sudo systemctl start telegram-auto-checkin
 详见 `UPGRADE.md`
 
 
-### 如果手机的TGAPP登录的时候要验证码，没有其他设备登录的状态，就可以用这个get_code.py
+### 如果手机的登录的时候要验证码，没有其他设备登录的状态，就可以用这个get_code.py
 ```bash
 cd telegram-auto-checkin
 source venv/bin/activate
