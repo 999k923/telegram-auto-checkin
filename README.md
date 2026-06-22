@@ -641,44 +641,12 @@ sudo systemctl start telegram-auto-checkin
 
 详见 `UPGRADE.md`
 
-## 📖 更多文档
 
-- **QUICKSTART.md** - 5分钟快速开始指南
-- **MULTI_TARGET_GUIDE.md** - 多目标配置详解
-- **SETUP_GUIDE.md** - 按钮签到详细指南
-- **UPGRADE.md** - 版本升级指南
-- **DEPLOYMENT_SUMMARY.md** - 部署功能总结
-
-## 📮 支持与反馈
-
-遇到问题？检查：
-
-1. 📋 日志文件 `auto_checkin.log`
-2. 📝 签到历史 `checkin_history.log`
-3. 🔧 系统日志 `sudo journalctl -u telegram-auto-checkin`
-4. 📚 相关文档（见上方）
-
-## 🎉 特色功能
-
-### ✨ 交互式配置
-
-- 全程引导式问答，无需手动编辑复杂配置
-- 支持无限个签到目标
-- 每个目标独立选择按钮/命令方式
-
-### 🛠️ 智能识别
-
-- 自动识别群组名称、ID、用户名
-- 自动在对话列表中搜索目标
-- 提高配置成功率
-
-### 📊 完整工具链
-
-- `setup_targets.py` - 首次配置向导
-- `add_target.py` - 添加新目标
-- `list_groups.py` - 查找群组信息
-- `test_buttons.py` - 查看按钮
-- `test_group.py` - 测试群组
-- `manual_checkin.py` - 手动测试
+### 如果手机的TGAPP登录的时候要验证码，没有其他设备登录的状态，就可以用这个get_code.py
+```bash
+cd telegram-auto-checkin
+source venv/bin/activate
+python get_code.py
+```
 
 
