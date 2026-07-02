@@ -44,6 +44,10 @@
 ## 快速开始
 
 ```bash
+
+# 1. 克隆仓库
+git clone https://github.com/999k923/telegram-auto-checkin.git
+
 # 进入项目目录
 cd /root/telegram-auto-checkin
 
