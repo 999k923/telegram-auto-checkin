@@ -1,182 +1,278 @@
-# Telegram 自动签到脚本
-自动在 Telegram 机器人和群组上每天定时签到打卡的 Python 脚本。emby订阅保号方便
----
+# Telegram 自动签到 - 统一管理控制台
 
-## ✨ 功能特点
+基于 Telegram Bot API 的自动签到工具，支持多个机器人/群组定时签到打卡。
 
-- 🎯 **无限目标**：支持添加无限个签到目标，每个独立配置
-- 🔘 **灵活方式**：每个目标可独立选择按钮点击或文本命令
-- 🤖 **智能识别**：自动识别群组名称、ID、用户名多种格式
-- ⏰ **定时调度**：支持自定义签到时间，精确到分钟
-- 🎲 **随机延迟**：模拟人类行为，避免被检测为机器人
-- 📝 **完整日志**：自动保存签到历史和详细日志
-- 🔐 **安全可靠**：使用官方 Telegram Client API
-- 🛠️ **丰富工具**：提供群组查找、按钮测试等辅助工具
+## 项目特点
 
-## 📋 系统要求
+- 🎯 **多目标支持**：可同时配置多个机器人和群组
+- 🔘 **灵活签到方式**：支持按钮点击和文本命令两种方式
+- ⏰ **定时调度**：精确到分钟的定时签到
+- 🎲 **随机延迟**：模拟人类行为，避免被检测
+- 📝 **完整日志**：自动记录签到历史和详细日志
+- 🛠️ **统一管理**：所有功能集成在一个菜单中
 
-- Ubuntu 18.04+ / Debian 10+ (或其他 Linux 发行版)
-- Python 3.8+
-- Telegram 账号
-- 512MB+ 内存
+## 目录
 
-## 🎯 快速开始
+- [快速开始](#快速开始)
+- [安装部署](#安装部署)
+  - [前提条件](#前提条件)
+  - [方式一：全新部署（一键安装）](#方式一全新部署一键安装)
+  - [方式二：已有配置文件部署（迁移/重装）](#方式二已有配置文件部署迁移重装)
+  - [方式三：手动安装](#方式三手动安装)
+- [获取 API 凭证](#获取-api-凭证)
+- [管理控制台](#管理控制台)
+  - [主菜单](#主菜单)
+  - [1. 一键安装/部署](#1-一键安装部署)
+  - [2. 配置签到目标](#2-配置签到目标)
+  - [3. 登录验证测试](#3-登录验证测试)
+  - [4. 列出群组和机器人](#4-列出群组和机器人)
+  - [5. 查看机器人按钮](#5-查看机器人按钮)
+  - [6. 测试群组签到](#6-测试群组签到)
+  - [7. 手动执行签到](#7-手动执行签到)
+  - [8. 服务管理](#8-服务管理)
+  - [9. 安装 systemd 服务](#9-安装-systemd-服务)
+  - [10. 查看日志](#10-查看日志)
+  - [11. 查看签到历史](#11-查看签到历史)
+  - [12. 编辑签到时间](#12-编辑签到时间)
+  - [13. 备份配置](#13-备份配置)
+  - [14. 恢复配置](#14-恢复配置)
+  - [15. 一键卸载](#15-一键卸载)
+  - [16. 自动获取验证码](#16-自动获取验证码)
+- [配置文件说明](#配置文件说明)
+- [故障排查](#故障排查)
 
-### 方式一：从 GitHub 部署
+## 快速开始
 
 ```bash
-# 1. 克隆仓库
-git clone https://github.com/999k923/telegram-auto-checkin.git
-cd telegram-auto-checkin
+# 进入项目目录
+cd /root/telegram-auto-checkin
 
-# 2. 安装虚拟环境依赖（如果未安装 python3-venv）
-sudo apt install python3.12-venv
-
-# 3. 创建虚拟环境
-python3 -m venv venv
-
-# 4. 激活虚拟环境（激活后会看到 (venv) 提示）
-source venv/bin/activate  # (venv) 提示出现
-
-# 5. 一键安装（自动完成所有配置）
-sudo bash install.sh
-
+# 直接启动管理控制台（不需要激活虚拟环境）
+python3 manager.py
 ```
 
-**脚本会自动完成：**
-- ✅ 安装 Python 和依赖
-- ✅ 创建虚拟环境
-- ✅ 引导配置 API 凭证
-- ✅ 交互式配置签到目标
+按提示输入菜单编号即可使用各项功能。
 
-### 获取 Telegram API 凭证
+> **注意：** `manager.py` 只使用 Python 标准库，无需激活虚拟环境。所有功能通过 `manager.py` 入口运行，无需手动配置环境。
+
+## 安装部署
+
+### 前提条件
+
+- Ubuntu 18.04+ / Debian 10+（或其他 Linux 发行版）
+- Python 3.8+
+- 512MB+ 内存
+
+### 方式一：全新部署（一键安装）
+
+适用于全新系统，没有 .env 和 Session 文件。
+
+```bash
+cd /root/telegram-auto-checkin
+python3 manager.py
+# 选择 [1] 一键安装/部署
+```
+
+会自动完成以下步骤：
+1. 检查并安装 Python 及系统依赖
+2. 创建 Python 虚拟环境
+3. 安装 Python 项目依赖
+4. 配置 Telegram API 凭证
+5. 配置签到目标
+6. 安装 systemd 服务并启动
+
+### 方式二：已有配置文件部署（迁移/重装）
+
+适用于以下场景：
+- 从旧机器迁移到新机器
+- 系统重装后恢复项目
+- 已有 `.env` 和 `telegram_session.session` 文件
+
+**步骤：**
+
+```bash
+# 1. 复制项目文件到新机器（不含 venv、.git、日志）
+scp -r user@old-server:/root/telegram-auto-checkin/ /root/telegram-auto-checkin/
+
+# 2. 确认必要文件存在
+cd /root/telegram-auto-checkin
+ls -la .env telegram_session.session
+
+# 3. 一键安装（会自动检测已有文件并跳过登录步骤）
+python3 manager.py
+# 选择 [1] 一键安装/部署
+```
+
+**说明：**
+- 如果 `.env` 中已有 API_ID/API_HASH/PHONE_NUMBER，安装流程会自动跳过 API 凭证配置
+- 如果 `telegram_session.session` 已存在，无需重新登录，也不需要验证码
+- 安装流程会提示"检测到已有 Session 文件"，可直接继续
+- 只需配置签到目标即可
+
+**如果 .env 丢失了：**
+
+手动创建 `.env` 文件：
+
+```bash
+nano .env
+```
+
+填入以下内容（从 https://my.telegram.org 获取 API 凭证）：
+
+```
+API_ID=你的API_ID
+API_HASH=你的API_HASH
+PHONE_NUMBER=+86你的手机号
+```
+
+### 方式三：手动安装
+
+适用于需要自定义安装步骤的场景。
+
+```bash
+# 1. 安装系统依赖
+sudo apt update
+sudo apt install python3 python3-pip python3-venv -y
+
+# 2. 创建虚拟环境
+cd /root/telegram-auto-checkin
+python3 -m venv venv
+
+# 3. 安装 Python 依赖
+venv/bin/python -m pip install -r requirements.txt
+
+# 4. 配置 .env 文件
+cp .env.example .env
+nano .env  # 填入 API_ID、API_HASH、PHONE_NUMBER
+
+# 5. 配置签到目标
+python3 manager.py  # 选择 [2] 配置签到目标
+
+# 6. 启动服务
+python3 manager.py  # 选择 [8] → [2] 后台运行
+```
+
+> **注意：** 推荐优先使用"一键安装"，它会自动处理 systemd 服务安装。
+## 获取 API 凭证
 
 1. 访问 https://my.telegram.org
 2. 使用手机号登录
 3. 点击 "API development tools"
-4. 创建应用获取 `API_ID` 和 `API_HASH`
+4. 创建应用并获取 `API_ID` 和 `API_HASH`
 
-获取如果提示ERROR，+86手机注册账号换香港或者台湾的干净节点。
+## 管理控制台
 
-### 第三步：按提示配置
 
-部署脚本会自动引导你完成所有配置：
-
-#### 🔑 配置 API 凭证
+### 主菜单
 
 ```
-请输入 API_ID (数字): 12345678
-请输入 API_HASH (32位字符串): abcdef123456...
-请输入手机号 (如 +8613800138000): +8613800138000
+┌──────────────────────────────────────────────────────────┐
+│  主菜单                                                   │
+├──────────────────────────────────────────────────────────┤
+│  [1] 一键安装 / 部署                                       │
+│  [2] 配置签到目标                                          │
+│  [3] 登录验证测试                                          │
+│  [4] 列出所有群组和机器人                                  │
+│  [5] 查看机器人按钮（测试按钮点击）                         │
+│  [6] 测试群组签到                                          │
+│  [7] 手动执行签到                                          │
+│  [8] 服务管理（启动 / 停止 / 重启 / 状态）                  │
 
+│  [9] 查看日志                                              │
+│  [10] 查看签到历史                                         │
+│  [11] 编辑签到时间配置                                      │
+│  [12] 备份配置                                             │
+│  [13] 恢复配置                                             │
+│  [14] 一键卸载                                             │
+│  [15] 自动获取验证码（get_code）                            │
+│  [0] 退出                                                  │
+└──────────────────────────────────────────────────────────┘
 ```
 
-#### 🎯 配置签到目标（交互式）
+### 1. 一键安装/部署
 
-**第 1 个目标：**
-```
-1️⃣  显示名称: @okemby_bot
-2️⃣  目标标识: @okemby_bot
-3️⃣  签到命令: /start  #用于呼出按钮的命令
-4️⃣  签到方式: 1 (按钮点击)
-5️⃣  按钮文字: 签到
+适用于全新系统，自动完成整个安装流程。
 
-✅ 第 1 个目标已添加!
-```
+**功能：**
+- 检查并安装 Python 及系统依赖
+- 创建 Python 虚拟环境
+- 安装 Python 项目依赖（telethon、APScheduler 等）
+- 配置 Telegram API 凭证（API_ID、API_HASH、手机号）
+- 配置签到目标
 
-**继续添加：**
-```
-是否添加第 2 个签到目标? (y/n): y
-
-1️⃣  显示名称: Cloud Cat Group
-2️⃣  目标标识: Cloud Cat Group
-3️⃣  签到命令: /checkin
-4️⃣  签到方式: 2 (文本命令)
-
-✅ 第 2 个目标已添加!
-
-是否添加第 3 个签到目标? (y/n): n
-```
-
-**完成配置：**
-```
-共配置 2 个签到目标
-
-确认保存配置? (y/n): y
-✅ 配置已成功保存!
-```
-
-### 第四步：首次登录验证
+**使用场景：**
+- 全新服务器部署
+- 需要重新安装时
 
 ```bash
-source venv/bin/activate
-python test_login.py
+python3 manager.py  →  [1]
 ```
 
-按提示输入：
-- Telegram 发送的验证码
-- 两步验证密码（如果启用）
+### 2. 配置签到目标
 
-### 第五步：测试签到
+管理签到目标（增/删/改/查）。
+
+**子菜单：**
+
+```
+┌──────────────────────────────────────────────────────┐
+│  [1] 查看当前目标列表                                  │
+│  [2] 添加新签到目标                                    │
+│  [3] 编辑指定目标                                      │
+│  [4] 删除指定目标                                      │
+│  [5] 重新配置所有目标（清空后从头添加）                 │
+│  [6] 使用 list_groups 查找群组名称                     │
+│  [0] 返回主菜单                                        │
+└──────────────────────────────────────────────────────┘
+```
+
+**添加目标流程：**
+
+```
+1️⃣  显示名称：输入机器人/群组的显示名称
+2️⃣  目标标识：机器人用 @username，群组用完整名称或 ID
+3️⃣  签到命令：如 /start、/checkin
+4️⃣  签到方式：[1] 按钮点击 / [2] 文本命令
+5️⃣  按钮文字：选择按钮点击时，输入按钮上的文字
+```
+
+**示例配置：**
+
+| 显示名称 | 目标标识 | 命令 | 方式 | 按钮文字 |
+|---------|---------|------|------|---------|
+| @okemby_bot | @okemby_bot | /start | 按钮点击 | 签到 |
+| GV.UY 交流群 | GV.UY 交流群 | 签到 | 文本命令 | - |
+| @some_bot | @some_bot | /daily | 按钮点击 | 打卡 |
+
+**重要：** 新增目标后需要重启签到程序才能生效。
 
 ```bash
-python manual_checkin.py
+python3 manager.py  →  [2]  →  [2] 添加目标
+# 添加完成后重启
+python3 manager.py  →  [8]  →  [5] 重启
 ```
 
-查看输出，确认所有目标签到成功：
+### 3. 登录验证测试
 
-```
-═══════════════════════════════════════
-开始签到: @okemby_bot
-═══════════════════════════════════════
-📤 向 @okemby_bot 发送 /start 并点击按钮: 签到
-✅ [2025-11-20 10:00:00] @okemby_bot 签到成功!
+首次登录后需要验证登录状态。
 
-═══════════════════════════════════════
-开始签到: Cloud Cat Group
-═══════════════════════════════════════
-📤 向 Cloud Cat Group 发送签到命令: /checkin
-✅ [2025-11-20 10:00:05] Cloud Cat Group 签到成功!
-```
-
-### 第六步：设置自动运行
+**功能：**
+- 验证 Session 文件是否有效
+- 测试 Telegram 连接是否正常
+- 首次登录时需要输入验证码
 
 ```bash
-chmod +x setup_service.sh
-sudo ./setup_service.sh
-```
-启动服务
-```bash
-sudo systemctl start telegram-auto-checkin
+python3 manager.py  →  [3]
 ```
 
-**完成！** 现在可以退出 SSH，脚本会在后台自动运行。
+**注意：** 首次登录时，Telegram 会发送验证码到你的手机，需要在终端输入验证码。
 
-```bash
-# 查看服务状态
-sudo systemctl status telegram-auto-checkin
+### 4. 列出群组和机器人
 
-# 退出 SSH
-exit
-```
+获取你当前账号的所有群组和机器人列表，方便查找目标名称。
 
-### 卸载脚本
-```bash
-sudo ./uninstall.sh
-```
+**输出示例：**
 
-## 🛠️ 常用工具
-
-### 📋 查看所有群组和机器人
-
-不确定群组名称或找不到群组？使用这个工具：
-
-```bash
-source venv/bin/activate
-python list_groups.py
-```
-
-**输出示例：群组用“名称”，机器人使用“用户名”。**
 ```
 📱 群组列表
 ═══════════════════════════════════════
@@ -192,461 +288,386 @@ python list_groups.py
     ✅ 配置使用: @okemby_bot
 ```
 
-### ➕ 添加新的签到目标
+```bash
+python3 manager.py  →  [4]
+```
 
-**方法一：交互式添加（推荐）**
+### 5. 查看机器人按钮
+
+查看机器人的所有按钮，确定正确的按钮文字。
+
+**功能：**
+- 发送命令给机器人
+- 显示机器人回复的所有按钮
+- 可测试点击按钮
 
 ```bash
-python add_target.py
+python3 manager.py  →  [5]
 ```
 
-支持连续添加多个目标，自动保存配置。
+**输出示例：**
 
-**方法二：重新配置所有目标**
+```
+🔘 找到以下按钮:
+  [1-1] 签到
+  [1-2] 菜单
+  [2-1] 每日签到
+```
+
+### 6. 测试群组签到
+
+测试在群组中的签到方式。
+
+**功能：**
+- 向群组发送签到命令
+- 查看群组回复和按钮
+- 可测试点击群组中的按钮
 
 ```bash
-python setup_targets.py
+python3 manager.py  →  [6]
 ```
 
-从头开始配置所有签到目标。
+### 7. 手动执行签到
 
-### 🔘 查看机器人按钮
+手动触发一次所有签到目标的签到。
+
+**用途：**
+- 测试签到功能是否正常
+- 验证新配置的目标
+- 调试签到问题
 
 ```bash
-python test_buttons.py
+python3 manager.py  →  [7]
 ```
 
-显示机器人的所有按钮，方便确定配置。
+**输出示例：**
 
-### 👥 测试群组签到
+```
+═══════════════════════════════════════
+开始签到: @okemby_bot
+═══════════════════════════════════════
+📤 向 @okemby_bot 发送 /start 并点击按钮: 签到
+✅ [2025-07-02 10:00:00] @okemby_bot 签到成功!
+
+═══════════════════════════════════════
+开始签到: GV.UY 交流群
+═══════════════════════════════════════
+📤 向 GV.UY 交流群 发送签到命令: 签到
+✅ [2025-07-02 10:00:05] GV.UY 交流群 签到成功!
+```
+
+### 8. 服务管理
+
+管理签到程序的运行状态。
+
+**子菜单：**
+
+```
+┌──────────────────────────────────────────────────────┐
+│  [1] 启动签到程序（前台运行，Ctrl+C 停止）             │
+│  [2] 启动签到程序（后台运行，PID 文件管理）            │
+│  [3] 停止后台运行的签到程序                            │
+│  [4] 查看签到程序运行状态                              │
+│  [5] 重启后台签到程序                                  │
+│  [0] 返回主菜单                                        │
+└──────────────────────────────────────────────────────┘
+```
+
+**使用场景：**
+
+| 方式 | 用途 |
+|------|------|
+| 前台运行 | 调试时查看日志输出 |
+| 后台运行 | 普通后台运行（PID 管理） |
+| systemd | 生产环境推荐，开机自启 |
 
 ```bash
-python test_group.py
+python3 manager.py  →  [8]
 ```
 
-测试群组的签到方式，查看是否有按钮。
+**查看状态的输出示例：**
 
-### 🧪 手动测试签到
+```
+检查签到程序运行状态...
+  ✅ 后台程序正在运行 (PID: 12345)
+  ✅ systemd 服务正在运行
+
+  配置状态:
+    API 凭证: ✅
+    签到目标: ✅ (6 个)
+    Session 文件: ✅
+    签到时间: 9:00 (Asia/Shanghai)
+    日志文件: ✅
+    历史记录: ✅
+```
+
+### 9. 查看日志
+
+查看签到程序的日志输出。
+
+**子菜单：**
+
+```
+┌──────────────────────────────────────────────────────┐
+│  [1] 查看自动签到日志 (auto_checkin.log)              │
+│  [2] 查看签到历史记录 (checkin_history.log)           │
+│  [3] 实时跟踪日志 (tail -f)                           │
+│  [4] 查看系统服务日志 (journalctl)                    │
+│  [0] 返回主菜单                                        │
+└──────────────────────────────────────────────────────┘
+```
 
 ```bash
-python manual_checkin.py
+python3 manager.py  →  [9]
 ```
 
-手动执行一次所有目标的签到测试。
+### 10. 查看签到历史
 
-## 📂 项目结构
-
-```
-telegram-auto-checkin/
-├── main.py                 # 主程序（定时调度）
-├── checkin.py              # 签到逻辑（支持多目标）
-├── telegram_client.py      # Telegram 客户端（智能识别）
-├── config.py               # 配置管理（多目标支持）
-│
-├── setup_targets.py        # 配置向导 - 首次部署 ⭐ 核心
-├── add_target.py           # 添加目标 - 支持无限添加 ⭐ 核心
-├── list_groups.py          # 列出群组 - 查找名称/ID ⭐ 核心
-│
-├── test_login.py           # 登录测试
-├── test_buttons.py         # 按钮查看
-├── test_group.py           # 群组测试
-├── manual_checkin.py       # 手动签到
-│
-├── deploy.sh               # 一键部署脚本 ⭐ 自动化
-├── setup_service.sh        # 系统服务安装
-├── run.sh                  # 后台运行脚本
-├── stop.sh                 # 停止脚本
-│
-├── requirements.txt        # Python 依赖
-├── .env                    # 环境变量配置（自动生成）
-│
-├── README.md               # 项目文档（本文件）
-├── QUICKSTART.md           # 5分钟快速开始
-├── MULTI_TARGET_GUIDE.md   # 多目标配置详解
-├── SETUP_GUIDE.md          # 按钮签到指南
-├── UPGRADE.md              # 版本升级指南
-└── DEPLOYMENT_SUMMARY.md   # 部署功能总结
-```
-
-## 🎮 使用说明
-
-### 🔧 修改配置
-
-#### 修改签到时间
+查看签到历史记录，记录每次签到的时间、目标和回复。
 
 ```bash
-nano .env
-
-# 修改这两行
-CHECKIN_HOUR=10    # 改为10点
-CHECKIN_MINUTE=30  # 改为30分
-
-# 重启服务
-sudo systemctl restart telegram-auto-checkin
+python3 manager.py  →  [10]
 ```
 
-#### 添加新的签到目标
+**历史记录格式：**
+
+```
+═══════════════════════════════════════
+签到目标: @okemby_bot
+时间: 2025-07-02 09:00:05
+目标: @okemby_bot
+命令: /start
+回复: 签到成功！今日已签到。
+```
+
+### 11. 编辑签到时间
+
+修改签到时间、时区和随机延迟配置。
+
+**可修改项：**
+
+| 配置项 | 说明 | 默认值 |
+|-------|------|-------|
+| 签到小时 | 0-23 | 9 |
+| 签到分钟 | 0-59 | 0 |
+| 时区 | 时区标识 | Asia/Shanghai |
+| 随机延迟最小值 | 秒 | 0 |
+| 随机延迟最大值 | 秒 | 300 |
 
 ```bash
-# 进入项目目录
-cd ~/telegram-auto-checkin
-source venv/bin/activate
-
-# 运行添加工具
-python add_target.py
-
-# 按提示添加新目标
-
-# 测试
-python manual_checkin.py
-
-# 重启服务
-sudo systemctl restart telegram-auto-checkin
+python3 manager.py  →  [11]
 ```
 
-#### 删除签到目标
+**常见时区：**
+
+| 时区标识 | 城市 |
+|---------|------|
+| Asia/Shanghai | 中国 |
+| Asia/Tokyo | 日本 |
+| Asia/Hong_Kong | 香港 |
+| UTC | 协调世界时 |
+| Europe/London | 伦敦 |
+
+### 12. 备份配置
+
+备份 `.env` 配置文件和 `telegram_session.session` 登录会话文件。
+
+**功能：**
+- 自动保存到 `backups/backup_YYYYMMDD_HHMMSS/` 目录
+- 可清理旧备份（只保留最近 5 个）
 
 ```bash
-# 编辑配置文件
-nano .env
-
-# 在 CHECKIN_TARGETS 中删除对应的目标
-# 重启服务
-sudo systemctl restart telegram-auto-checkin
+python3 manager.py  →  [12]
 ```
 
-### 📊 查看日志
+**建议：** 修改重要配置前先备份。
+
+### 13. 恢复配置
+
+从备份中恢复配置文件。
+
+**流程：**
+1. 列出所有可用备份
+2. 选择要恢复的备份
+3. 自动备份当前配置后恢复
 
 ```bash
-# 查看程序日志
-tail -f auto_checkin.log
-
-# 查看签到历史
-cat checkin_history.log
-
-# 查看系统日志
-sudo journalctl -u telegram-auto-checkin -f
-
-# 查看最近50条日志
-sudo journalctl -u telegram-auto-checkin -n 50
+python3 manager.py  →  [13]
 ```
 
-### 🔄 服务管理
+### 14. 一键卸载
+
+完全卸载项目。
+
+**操作内容：**
+- 停止签到程序
+- 停止并删除 systemd 服务
+- 删除 Python 虚拟环境
+- 删除项目目录
+- 清理日志文件
 
 ```bash
-# 启动服务
-sudo systemctl start telegram-auto-checkin
-
-# 停止服务
-sudo systemctl stop telegram-auto-checkin
-
-# 重启服务
-sudo systemctl restart telegram-auto-checkin
-
-# 查看状态
-sudo systemctl status telegram-auto-checkin
-
-# 开机自启
-sudo systemctl enable telegram-auto-checkin
-
-# 禁用自启
-sudo systemctl disable telegram-auto-checkin
+python3 manager.py  →  [14]
 ```
 
-## ⚙️ 配置说明
+**⚠️ 警告：** 此操作会永久删除所有数据，建议先使用 [13] 备份配置。
 
-### 环境变量配置
+### 15. 自动获取验证码
 
-`.env` 文件示例：
+自动获取 Telegram 发送的登录验证码。
+
+**原理：**
+- 连接 Telegram API（使用已有 Session）
+- 监听 Telegram 官方账号（chat_id=777000）的消息
+- 自动提取 5-6 位数字验证码
+
+**使用场景：**
+- 在新设备上登录 Telegram 需要验证码时
+- 服务器无图形界面，需要获取验证码
+
+```bash
+python3 manager.py  →  [15]
+```
+
+**使用方法：**
+1. 启动程序（`python3 manager.py` → `[16]`）
+2. 在新设备上登录 Telegram
+3. 点击"发送到此设备"
+4. 程序自动接收并显示验证码
+
+## 配置文件说明
+
+### .env 文件
+
+所有配置保存在 `.env` 文件中：
 
 ```bash
 # Telegram API 配置
 API_ID=12345678
-API_HASH=abcdef1234567890abcdef1234567890
+API_HASH=abcdef1234abcd1234abcd1234abcd1234
 PHONE_NUMBER=+8613800138000
 
-# 签到目标配置（自动生成的 JSON 格式）
-CHECKIN_TARGETS=[{"name":"@okemby_bot","target":"@okemby_bot","command":"/start","button_text":"签到"},{"name":"Cloud Cat Group","target":"Cloud Cat Group","command":"/checkin","button_text":""}]
-
 # 签到时间配置
-CHECKIN_HOUR=9          # 签到时间（小时）0-23
-CHECKIN_MINUTE=0        # 签到时间（分钟）0-59
+CHECKIN_HOUR=9
+CHECKIN_MINUTE=0
 
 # 时区配置
-TIMEZONE=Asia/Shanghai  # 中国时区
+TIMEZONE=Asia/Shanghai
 
 # 随机延迟配置（秒）
-RANDOM_DELAY_MIN=0      # 最小延迟
-RANDOM_DELAY_MAX=300    # 最大延迟（5分钟）
+RANDOM_DELAY_MIN=0
+RANDOM_DELAY_MAX=300
+
+# 签到目标配置（JSON 格式）
+CHECKIN_TARGETS=[
+  {
+    "name": "@okemby_bot",
+    "target": "@okemby_bot",
+    "command": "/start",
+    "button_text": "签到"
+  },
+  {
+    "name": "GV.UY 交流群",
+    "target": "GV.UY 交流群",
+    "command": "签到",
+    "button_text": ""
+  }
+]
 ```
 
-### 签到目标配置详解
+### 签到目标配置说明
 
-每个目标包含以下字段：
+每个签到目标包含以下字段：
 
-```json
-{
-  "name": "显示名称",           // 在日志中显示的名称
-  "target": "目标标识",         // 机器人用户名/群组名称/ID
-  "command": "/start",          // 要发送的命令
-  "button_text": "签到"         // 按钮文字，留空则使用命令方式
-}
-```
-
-**目标标识格式：**
-
-| 类型 | 格式 | 示例 |
-|------|------|------|
-| 机器人 | @username | `@okemby_bot` |
-| 群组名称 | 完整名称 | `Cloud Cat Group` |
-| 群组ID | 负数ID | `-1001234567890` |
+| 字段 | 说明 | 示例 |
+|-----|------|------|
+| name | 显示名称（日志中显示） | `@okemby_bot` |
+| target | 目标标识 | `@okemby_bot` 或 `群组名称` |
+| command | 发送的命令 | `/start` |
+| button_text | 按钮文字 | `签到`（留空则使用文本命令） |
 
 **签到方式：**
 
-| 方式 | button_text | 说明 |
-|------|-------------|------|
-| 按钮点击 | `"签到"` | 发送命令后点击按钮 |
-| 文本命令 | `""` (留空) | 直接发送命令 |
+| button_text | 方式 | 说明 |
+|------------|------|------|
+| `"签到"` | 按钮点击 | 发送命令后自动点击按钮 |
+| `""` | 文本命令 | 直接发送命令 |
 
-### 配置示例
+## 故障排查
 
-#### 示例 1：单个机器人（按钮签到）
+### 常见问题
 
-```bash
-CHECKIN_TARGETS=[{"name":"@okemby_bot","target":"@okemby_bot","command":"/start","button_text":"签到"}]
-```
-
-#### 示例 2：机器人 + 群组
+**1. 找不到群组**
 
 ```bash
-CHECKIN_TARGETS=[{"name":"机器人","target":"@okemby_bot","command":"/start","button_text":"签到"},{"name":"群组","target":"Cloud Cat Group","command":"/checkin","button_text":""}]
+python3 manager.py  →  [4]  # 列出所有群组，获取精确名称
 ```
 
-#### 示例 3：多个目标（混合方式）
+**2. 找不到按钮**
 
 ```bash
-CHECKIN_TARGETS=[{"name":"Bot1","target":"@bot1","command":"/start","button_text":"签到"},{"name":"Group1","target":"-1001234567890","command":"/checkin","button_text":""},{"name":"Bot2","target":"@bot2","command":"/daily","button_text":"打卡"}]
+python3 manager.py  →  [5]  # 查看机器人的所有按钮
 ```
 
-## 🛡️ 安全注意事项
-
-1. **保护 Session 文件**
-   - `telegram_session.session` 文件等同于登录凭证
-   - 不要分享给任何人
-   - 已自动添加到 `.gitignore`
-
-2. **保护 API 凭证**
-   - 不要公开 `API_ID` 和 `API_HASH`
-   - 不要将 `.env` 文件提交到 Git
-
-3. **使用专用账号**
-   - 建议使用小号进行自动化操作
-   - 避免使用主账号
-
-4. **合理设置延迟**
-   - 使用随机延迟避免被检测
-   - 不要频繁操作
-
-## 🐛 故障排查
-
-### 登录相关
-
-#### ❌ 无法登录
-
-**问题：** API ID/Hash 错误
-
-**解决：**
-```bash
-# 检查 .env 配置
-cat .env | grep API
-
-# 确认凭证来源：https://my.telegram.org
-# API_ID 是纯数字，API_HASH 是32位字符串
-```
-
-#### ❌ 未收到验证码
-
-**解决：**
-1. 检查手机号格式（需要 `+` 和国际区号）
-2. 确认网络连接正常
-3. 检查 Telegram 是否被屏蔽
-
-### 签到相关
-
-#### ❌ 找不到群组
-
-**问题：** `Cannot find any entity corresponding to "xxx"`
-
-**解决：**
-```bash
-# 1. 列出所有群组，获取精确名称或 ID
-python list_groups.py
-
-# 2. 使用显示的名称或 ID 重新配置
-python add_target.py
-
-# 3. 测试
-python manual_checkin.py
-```
-
-#### ❌ 找不到按钮
-
-**问题：** `未找到包含 'xxx' 的按钮`
-
-**解决：**
-```bash
-# 查看机器人的所有按钮
-python test_buttons.py
-
-# 复制准确的按钮文字到配置
-python add_target.py
-```
-
-#### ❌ 签到无回复
-
-**解决：**
-```bash
-# 1. 测试机器人/群组
-python test_buttons.py  # 机器人
-python test_group.py    # 群组
-
-# 2. 检查配置
-cat .env | grep CHECKIN_TARGETS
-
-# 3. 查看详细日志
-tail -f auto_checkin.log
-```
-
-### 服务相关
-
-#### ❌ 服务启动失败
-
-**解决：**
-```bash
-# 查看详细错误
-sudo journalctl -u telegram-auto-checkin -n 50 --no-pager
-
-# 重新安装服务
-sudo ./setup_service.sh
-
-# 检查配置文件
-python -c "import config; print('配置正确')"
-```
-
-#### ❌ 定时任务不执行
-
-**解决：**
-```bash
-# 1. 检查服务状态
-sudo systemctl status telegram-auto-checkin
-
-# 2. 查看调度器日志
-sudo journalctl -u telegram-auto-checkin | grep "下次签到"
-
-# 3. 验证时区设置
-cat .env | grep TIMEZONE
-```
-
-## 📝 常见问题
-
-### Q: 如何同时在多个机器人/群组签到？
-
-**A:** 使用配置工具添加多个目标：
+**3. 签到失败**
 
 ```bash
-python add_target.py
-# 或
-python setup_targets.py
+python3 manager.py  →  [7]  # 手动测试签到
+python3 manager.py  →  [9] → [1]  # 查看详细日志
 ```
 
-详见 `MULTI_TARGET_GUIDE.md`
-
-### Q: 机器人是按钮签到还是命令签到？
-
-**A:** 运行测试工具查看：
+**4. 服务异常**
 
 ```bash
-python test_buttons.py  # 查看机器人按钮
-python test_group.py    # 测试群组方式
+python3 manager.py  →  [8] → [4]  # 查看运行状态
+sudo journalctl -u telegram-auto-checkin -f  # 查看系统日志
 ```
 
-### Q: 群组名称如何填写？
-
-**A:** 运行 `python list_groups.py` 查看所有群组的精确名称和 ID，推荐使用 ID。
-
-### Q: 需要一直开着 Telegram 客户端吗？
-
-**A:** 不需要。脚本使用 Telegram API 独立运行，与客户端无关。
-
-### Q: 会被封号吗？
-
-**A:** 正常使用不会。建议：
-- 使用小号
-- 设置随机延迟（已内置）
-- 不要频繁操作
-
-### Q: 支持 Windows/Mac 吗？
-
-**A:** 主要代码支持跨平台，但部署脚本是为 Linux 设计的，需要修改。
-
-### Q: 如何知道签到是否成功？
-
-**A:** 查看日志：
+**5. 配置错误**
 
 ```bash
-# 签到历史
-cat checkin_history.log
-
-# 实时日志
-tail -f auto_checkin.log
-
-# 系统日志
-sudo journalctl -u telegram-auto-checkin -f
+python3 manager.py  →  [2]  # 重新配置签到目标
+python3 manager.py  →  [11]  # 检查时间配置
 ```
 
-### Q: 可以修改签到时间吗？
-
-**A:** 可以，编辑 `.env` 后重启服务：
+**6. 需要验证码**
 
 ```bash
-nano .env
-# 修改 CHECKIN_HOUR 和 CHECKIN_MINUTE
-sudo systemctl restart telegram-auto-checkin
+python3 manager.py  →  [15]  # 自动获取验证码
 ```
 
-## 🔄 更新升级
+### 安全提示
 
-### 更新代码
+- `.env` 文件包含敏感信息，不要公开分享
+- `telegram_session.session` 文件等同于登录凭证，请妥善保管
+- 建议使用专用小号进行自动化操作
+- 合理设置随机延迟，避免频繁操作
 
-```bash
-# 1. 备份配置
-cp .env .env.backup
-cp telegram_session.session telegram_session.backup
+---
 
-# 2. 停止服务
-sudo systemctl stop telegram-auto-checkin
+## 核心文件说明
 
-# 3. 更新代码（上传新文件或 git pull）
+| 文件 | 说明 |
+|-----|------|
+| `manager.py` | 统一管理控制台（主入口） |
+| `main.py` | 定时签到调度器 |
+| `checkin.py` | 签到逻辑实现 |
+| `telegram_client.py` | Telegram 客户端管理 |
+| `config.py` | 配置文件管理 |
+| `get_code.py` | 自动获取验证码 |
+| `list_groups.py` | 列出群组和机器人 |
+| `test_*.py` | 各种测试工具 |
+| `setup_targets.py` | 首次目标配置向导 |
+| `deploy.sh` | 一键部署脚本 |
+| `setup_service.sh` | systemd 服务安装脚本 |
 
-# 4. 更新依赖
-source venv/bin/activate
-pip install -r requirements.txt --upgrade
+---
 
-# 5. 恢复配置
-cp .env.backup .env
+## 更新日志
 
-# 6. 重启服务
-sudo systemctl start telegram-auto-checkin
-```
+- **v2.0** - 重构为统一管理控制台，所有功能集成在 `manager.py`
+- **v1.x** - 原版项目，功能分散在多个独立脚本中
 
-详见 `UPGRADE.md`
+---
 
-
-### 登录正常以后，还可以用来获取验证码，就可以用这个get_code.py
-```bash
-cd telegram-auto-checkin
-source venv/bin/activate
-python get_code.py
-```
-
-
+*项目地址：https://github.com/999k923/telegram-auto-checkin*
