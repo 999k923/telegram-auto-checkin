@@ -715,7 +715,7 @@ def cmd_list_groups():
         return
     ok, out = run_cmd(f"{py} list_groups.py", check=False, timeout=120)
     if out:
-        print(out[-3000:])
+        print(out)
 
 
 # ---------- 5. 查看机器人按钮 ----------
