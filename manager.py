@@ -968,7 +968,11 @@ def _install_systemd_service():
     if not py_path or not Path(py_path).exists():
         print("⚠️  虚拟环境不存在，跳过 systemd 服务安装")
         return
-    current_user = os.environ.get("SUDO_USER", os.environ.get("USER", "root"))
+    # 如果项目目录在 /root 下，强制使用 root 用户（避免权限问题）
+    if str(SCRIPT_DIR).startswith("/root/"):
+        current_user = "root"
+    else:
+        current_user = os.environ.get("SUDO_USER", os.environ.get("USER", "root"))
 
     service_content = f"""[Unit]
 Description={PROJECT_NAME} - Telegram Auto Check-in
