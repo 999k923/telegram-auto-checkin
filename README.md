@@ -129,34 +129,7 @@ API_HASH=你的API_HASH
 PHONE_NUMBER=+86你的手机号
 ```
 
-### 方式三：手动安装
 
-适用于需要自定义安装步骤的场景。
-
-```bash
-# 1. 安装系统依赖
-sudo apt update
-sudo apt install python3 python3-pip python3-venv -y
-
-# 2. 创建虚拟环境
-cd /root/telegram-auto-checkin
-python3 -m venv venv
-
-# 3. 安装 Python 依赖
-venv/bin/python -m pip install -r requirements.txt
-
-# 4. 配置 .env 文件
-cp .env.example .env
-nano .env  # 填入 API_ID、API_HASH、PHONE_NUMBER
-
-# 5. 配置签到目标
-python3 manager.py  # 选择 [2] 配置签到目标
-
-# 6. 启动服务
-python3 manager.py  # 选择 [8] → [2] 后台运行
-```
-
-> **注意：** 推荐优先使用"一键安装"，它会自动处理 systemd 服务安装。
 ## 获取 API 凭证
 
 1. 访问 https://my.telegram.org
