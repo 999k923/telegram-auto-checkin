@@ -806,7 +806,7 @@ def cmd_manual_checkin():
     if not targets:
         print("⚠️  当前没有配置签到目标，请先配置目标后再测试。")
         return
-    ok, out = run_cmd(f"{py} manual_checkin.py", check=False, timeout=600)
+    ok, out = run_cmd(f"{py} manual_checkin.py", check=False, timeout=120)
     if out:
         print(out[-3000:])
 

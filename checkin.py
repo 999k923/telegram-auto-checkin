@@ -17,18 +17,22 @@ class AutoCheckin:
     def __init__(self):
         self.client_manager = TelegramClientManager()
     
-    async def perform_checkin(self):
-        """执行签到操作（所有目标）"""
+    async def perform_checkin(self, skip_delay=False):
+        """执行签到操作（所有目标）
+        
+        Args:
+            skip_delay: True 则跳过随机延迟（手动签到使用）
+        """
         try:
             # 启动客户端
             await self.client_manager.start_client()
             
             # 遍历所有签到目标
             for target_config in config.CHECKIN_TARGETS:
-                await self._checkin_single_target(target_config)
+                await self._checkin_single_target(target_config, skip_delay=skip_delay)
                 
                 # 多个目标之间添加延迟
-                if len(config.CHECKIN_TARGETS) > 1:
+                if len(config.CHECKIN_TARGETS) > 1 and not skip_delay:
                     await asyncio.sleep(3)
             
         except Exception as e:
@@ -36,18 +40,13 @@ class AutoCheckin:
         finally:
             await self.client_manager.disconnect()
     
-    async def _checkin_single_target(self, target_config):
+    async def _checkin_single_target(self, target_config, skip_delay=False):
         """
         执行单个目标的签到
         
         Args:
             target_config: 签到配置字典
-                {
-                    'name': '显示名称',
-                    'target': '目标（机器人用户名或群组名称）',
-                    'command': '命令',
-                    'button_text': '按钮文字（可选）'
-                }
+            skip_delay: True 则跳过随机延迟（手动签到使用）
         """
         try:
             name = target_config.get('name', target_config['target'])
@@ -59,8 +58,8 @@ class AutoCheckin:
             logger.info(f"开始签到: {name}")
             logger.info(f"{'='*60}")
             
-            # 随机延迟（模拟人类行为）
-            if config.RANDOM_DELAY_MAX > 0:
+            # 随机延迟（模拟人类行为），手动签到时跳过
+            if not skip_delay and config.RANDOM_DELAY_MAX > 0:
                 delay = random.randint(config.RANDOM_DELAY_MIN, config.RANDOM_DELAY_MAX)
                 logger.info(f"⏳ 随机延迟 {delay} 秒...")
                 await asyncio.sleep(delay)

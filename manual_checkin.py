@@ -13,13 +13,13 @@ logger = logging.getLogger(__name__)
 
 
 async def main():
-    """手动执行签到"""
+    """手动执行签到（跳过随机延迟，立即执行）"""
     logger.info("=" * 60)
     logger.info("手动签到")
     logger.info("=" * 60)
     
     checkin = AutoCheckin()
-    await checkin.perform_checkin()
+    await checkin.perform_checkin(skip_delay=True)
     
     logger.info("\n签到完成！")
 
