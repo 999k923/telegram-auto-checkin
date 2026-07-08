@@ -445,9 +445,31 @@ def cmd_install():
         else:
             print("保留现有配置，跳过此步骤。")
     else:
-        print("即将启动交互式配置向导，可添加多个签到目标。")
-        wait()
-        _interactive_add_targets(reset=False)
+        print("  当前没有配置签到目标。")
+        print("\n  [1] 先列出所有群组和机器人，再配置目标")
+        print("  [2] 直接跳过，稍后通过 [2] 菜单配置")
+        choice = input("  请选择 [1/2] (默认 1): ").strip()
+        if choice == "2":
+            print("跳过签到目标配置，后续可在主菜单 [2] 中手动添加。")
+            # 验证环节需要目标，跳过验证
+            pass
+        else:
+            # 列出群组和机器人（需要 venv 已就绪）
+            py = venv_python()
+            if py and Path(py).exists():
+                print("\n正在列出所有群组和机器人，请稍候...")
+                ok, out = run_cmd(f"{py} list_groups.py", check=False, timeout=120)
+                if ok and out:
+                    print(out)
+                    print("\n根据上面列出的信息，现在配置签到目标。")
+                else:
+                    print("⚠️  列出群组失败，请检查网络连接或 Telegram 登录状态。")
+                    print("  可先运行 [3] 登录验证测试，再继续。")
+            else:
+                print("⚠️  虚拟环境未创建，无法列出群组。")
+                print("  请确保步骤 1-3 已完成。")
+            wait()
+            _interactive_add_targets(reset=False)
 
     # 验证
     print("\n--- 验证配置 ---")

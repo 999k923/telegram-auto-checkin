@@ -67,5 +67,6 @@ if not API_ID or not API_HASH:
     raise ValueError("请在 .env 文件中设置 API_ID 和 API_HASH")
 if not PHONE_NUMBER:
     raise ValueError("请在 .env 文件中设置 PHONE_NUMBER")
-if not CHECKIN_TARGETS:
-    raise ValueError("请在 .env 文件中设置签到目标（BOT_USERNAME 或 CHECKIN_TARGETS）")
+# 注意：不在此处验证 CHECKIN_TARGETS。
+# 目标是运行时才需要的配置（如手动签到），不应阻止配置阶段的工具
+# （如 list_groups.py）正常运行——否则用户无法查看群组列表来添加目标。
