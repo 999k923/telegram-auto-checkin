@@ -953,33 +953,43 @@ def _check_status():
         print("  ❌ 虚拟环境不存在")
         return
 
+    # PID 文件 / systemd / pgrep 三处互查，综合给出状态
+    running = False
     if PID_FILE.exists():
         try:
             pid = int(PID_FILE.read_text().strip())
             if _is_process_alive(pid):
                 print(f"  ✅ 后台程序正在运行 (PID: {pid})")
+                running = True
             else:
-                print(f"  ❌ 进程已停止 (PID: {pid})，PID 文件已失效")
+                print(f"  ⚠️  PID 文件已失效 (PID: {pid} 已停止)")
         except (ValueError, OSError):
             print("  ⚠️  PID 文件内容异常")
-    else:
-        print("  ℹ️  未找到 PID 文件")
-
-    # 尝试通过 pgrep
-    try:
-        import subprocess as sp
-        result = sp.run(["pgrep", "-f", "main.py"], capture_output=True, text=True, cwd=SCRIPT_DIR)
-        if result.stdout.strip():
-            print(f"  发现相关 main.py 进程: {result.stdout.strip().split()}")
-    except Exception:
-        pass
 
     # systemd 状态
     ok, out = run_cmd(f"systemctl is-active {SERVICE_NAME} 2>/dev/null || echo not-installed")
     if ok and out.strip() == "active":
         print(f"  ✅ systemd 服务正在运行")
+        running = True
     elif ok:
         print(f"  ℹ️  systemd 服务状态: {out.strip()}")
+
+    # 通过 pgrep 补充发现（适用于 systemd 或前台启动但无 PID 文件的场景）
+    try:
+        import subprocess as sp
+        result = sp.run(["pgrep", "-f", "main.py"], capture_output=True, text=True, cwd=SCRIPT_DIR)
+        if result.stdout.strip() and not running:
+            pids = result.stdout.strip().split()
+            running = True
+            print(f"  ℹ️  PID 文件不存在，但通过进程列表发现 main.py 正在运行: {pids}")
+        elif result.stdout.strip():
+            pids = result.stdout.strip().split()
+            print(f"  ℹ️  发现相关 main.py 进程: {pids}")
+    except Exception:
+        pass
+
+    if not running and not PID_FILE.exists():
+        print("  ℹ️  程序未在后台运行（可通过 [8]->[2] 启动）")
 
     # 配置文件状态
     _, env = load_env_to_lines()
